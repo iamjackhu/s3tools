@@ -1,54 +1,68 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"net/http"
+	log "log/slog"
 	"os"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
 )
 
+var configFile string
+
+func init() {
+	flag.StringVar(&configFile, "config", "config.yaml", "This tools will load its initial configtaiton from this file. Omit this false to use the default configuration.")
+	flag.Parse()
+}
+
 func main() {
-	fmt.Println("Starting")
-
-	endpoint := "10.0.1.88:9000"
-	AccessKey := "ZhAmNIEBEfTNpWGR"
-	SecretKey := "znN1kMoSlEh8NTy4h3skqakSrg45R2a8"
-
-	httpClient := http.Client{}
-
-	cred := credentials.NewStaticCredentials(AccessKey, SecretKey, "")
-	disableSSL := true
-	config := &aws.Config{
-		Region:      aws.String("default"),
-		Endpoint:    &endpoint,
-		Credentials: cred,
-		DisableSSL:  &disableSSL,
-		HTTPClient:  &httpClient,
-	}
-
-	session, err := session.NewSession(config)
+	cfg, err := GetConfig(configFile)
 	if err != nil {
-		fmt.Printf("can't create aws session: %v\n", err)
+		log.Error("can't read configuration", "file", configFile, "error", err)
 		os.Exit(1)
 	}
 
-	client := s3.New(session)
+	log.Info("Starting")
 
-	request := client.NewRequest(&request.Operation{
-		HTTPMethod: "PUT",
-		HTTPPath:   "/testbk",
-		BeforePresignFn: func(r *request.Request) error {
-			return nil
-		},
-	}, nil, nil)
-
-	if err := request.Send(); err != nil {
-		fmt.Printf("can't send request: %v\n", err)
-		os.Exit(2)
+	awsCfg := &aws.Config{
+		Region:      aws.String(cfg.S3Endpoint.Region),
+		Endpoint:    aws.String(cfg.S3Endpoint.Endpoint),
+		Credentials: credentials.NewStaticCredentials(cfg.S3Endpoint.AccessKey, cfg.S3Endpoint.SecretKey, ""),
+		DisableSSL:  aws.Bool(true),
 	}
+
+	client, err := NewS3Client(awsCfg)
+	if err != nil {
+		log.Error("can't create AWS session", "error", err)
+		os.Exit(1)
+	}
+
+	concurrentNumber := cfg.Concurrent
+	in := make(chan int)
+	go func(num int) {
+		for i := 0; i < num; i++ {
+			in <- i
+		}
+		for i := 0; i < concurrentNumber; i++ {
+			in <- -1
+		}
+	}(cfg.Total)
+
+	result := processAndGather(in, func(i int) int {
+		start := time.Now()
+		if err := DeleteBucket(client, fmt.Sprintf("%s-%d-%d", cfg.BucketPrefile, concurrentNumber, i)); err != nil {
+			return -1
+		} else {
+			return int(time.Since(start) / (1000 * 1000)) // micro second
+		}
+	}, concurrentNumber)
+
+	for i := 0; i < len(result); i++ {
+		log.Info(fmt.Sprintf("[Operation %d]", i), "time(ms)", result[i])
+	}
+
+	log.Info("Completed")
 }

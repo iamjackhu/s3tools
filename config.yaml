@@ -1,0 +1,8 @@
+s3Endpoint:
+  endpoint: "10.0.1.88:9000"
+  accessKey: "ZhAmNIEBEfTNpWGR"
+  secretKey: "znN1kMoSlEh8NTy4h3skqakSrg45R2a8"
+  region: "default"
+bucketPrefile: "ppbk"
+concurrent: 1
+total: 1
