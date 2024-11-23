@@ -53,7 +53,7 @@ func main() {
 
 	result := processAndGather(in, func(i int) int {
 		start := time.Now()
-		if err := DeleteBucket(client, fmt.Sprintf("%s-%d-%d", cfg.BucketPrefile, concurrentNumber, i)); err != nil {
+		if err := CreateBucket(client, fmt.Sprintf("%s-%d-%d", cfg.BucketPrefile, concurrentNumber, i)); err != nil {
 			return -1
 		} else {
 			return int(time.Since(start) / (1000 * 1000)) // micro second
