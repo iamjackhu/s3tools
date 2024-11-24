@@ -14,7 +14,7 @@ import (
 var configFile string
 
 func init() {
-	flag.StringVar(&configFile, "config", "config.yaml", "This tools will load its initial configtaiton from this file. Omit this false to use the default configuration.")
+	flag.StringVar(&configFile, "config", "config.yaml", "This tools will load its initial configuration from this file. Omit this false to use the default configuration.")
 	flag.Parse()
 }
 
@@ -40,25 +40,24 @@ func main() {
 		os.Exit(1)
 	}
 
-	concurrentNumber := cfg.Concurrent
 	in := make(chan int)
 	go func(num int) {
 		for i := 0; i < num; i++ {
 			in <- i
 		}
-		for i := 0; i < concurrentNumber; i++ {
+		for i := 0; i < cfg.Concurrent; i++ {
 			in <- -1
 		}
 	}(cfg.Total)
 
 	result := processAndGather(in, func(i int) int {
 		start := time.Now()
-		if err := CreateBucket(client, fmt.Sprintf("%s-%d-%d", cfg.BucketPrefile, concurrentNumber, i)); err != nil {
+		if err := operateBucket(client, fmt.Sprintf("%s-%d-%d", cfg.BucketPrefile, cfg.Concurrent, i), cfg.Operation); err != nil {
 			return -1
 		} else {
 			return int(time.Since(start) / (1000 * 1000)) // micro second
 		}
-	}, concurrentNumber)
+	}, cfg.Concurrent)
 
 	for i := 0; i < len(result); i++ {
 		log.Info(fmt.Sprintf("[Operation %d]", i), "time(ms)", result[i])

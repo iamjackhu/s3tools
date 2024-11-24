@@ -1,8 +1,9 @@
 s3Endpoint:
-  endpoint: "10.0.1.71:9000"
-  accessKey: "p3lhT4cw3yaISDFT"
-  secretKey: "MYaR4gu3hzC9Py9XHcFFUTlOE4DhT0rO"
+  endpoint: "10.0.1.78"
+  accessKey: "RJM9EQF3PBGKNCHHAEIX"
+  secretKey: "3bUg4iwchFaiS3uWkV2UslxgPvwLcXgEV4oSWe4D"
   region: "default"
+operation: PUT  # PUT: create; DELETE: remove
 bucketPrefile: "ppbk"
 concurrent: 10
 total: 100

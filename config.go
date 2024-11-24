@@ -16,6 +16,7 @@ type S3Endpoint struct {
 
 type S3ToolConfig struct {
 	S3Endpoint    S3Endpoint `yaml:"s3Endpoint"`
+	Operation     string     `yaml:"operation"`
 	BucketPrefile string     `yaml:"bucketPrefile"`
 	Concurrent    int        `yaml:"concurrent"`
 	Total         int        `yaml:"total"`
