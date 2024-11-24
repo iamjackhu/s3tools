@@ -6,10 +6,11 @@ S3 工具集
 ### Config.yaml
 ```
 s3Endpoint:
-  endpoint: "10.0.1.88:9000"
+  endpoint: "10.0.1.71:9000"
   accessKey: "ZhAmNIEBEfTNpWGR"
   secretKey: "znN1kMoSlEh8NTy4h3skqakSrg45R2a8"
   region: "default"
+operation: PUT  # PUT: create; DELETE: remove
 bucketPrefile: "ppbk"
 concurrent: 10
 total: 100
