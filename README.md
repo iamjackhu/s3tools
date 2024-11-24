@@ -125,5 +125,5 @@ go build -ldflags "-X main._version=''" -o ./build/bucketPerf *.go
 2024/11/23 21:50:56 INFO [Operation 97] time(ms)=8
 2024/11/23 21:50:56 INFO [Operation 98] time(ms)=6
 2024/11/23 21:50:56 INFO [Operation 99] time(ms)=8
-2024/11/23 21:50:56 INFO Completed
+2024/11/23 21:50:56 INFO Completed "total time(s)"=4
 ```

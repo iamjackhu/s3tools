@@ -59,9 +59,11 @@ func main() {
 		}
 	}, cfg.Concurrent)
 
+	var total int64 = 0
 	for i := 0; i < len(result); i++ {
+		total += int64(result[i])
 		log.Info(fmt.Sprintf("[Operation %d]", i), "time(ms)", result[i])
 	}
 
-	log.Info("Completed")
+	log.Info("Completed", "total time(s)", total/1000)
 }
