@@ -3,7 +3,7 @@ s3Endpoint:
   accessKey: "RJM9EQF3PBGKNCHHAEIX"
   secretKey: "3bUg4iwchFaiS3uWkV2UslxgPvwLcXgEV4oSWe4D"
   region: "default"
-operation: PUT  # PUT: create; DELETE: remove
+operation: DELETE  # PUT: create; DELETE: remove
 bucketPrefile: "ppbk"
 concurrent: 10
 total: 100

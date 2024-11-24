@@ -65,5 +65,5 @@ func main() {
 		log.Info(fmt.Sprintf("[Operation %d]", i), "time(ms)", result[i])
 	}
 
-	log.Info("Completed", "total time(s)", total/1000)
+	log.Info("Completed", "average time(ms)", total/int64(cfg.Total))
 }
